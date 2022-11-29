@@ -1,13 +1,9 @@
 from numpy import zeros, empty
 from enum import Enum
 
-class Alignment(Enum):
-    NW = 1 # Needleman-Wunsch, global
-    FIT = 2 # String fitting
-    SW = 3 # Smith-Waterman, local
-    
 
-def sa(x: str, y: str, mode: Alignment, s: tuple):
+
+def sa(x: str, y: str, s: tuple):
     d = (len(y) + 1, len(x) + 1)
     
     F = zeros(d)
@@ -21,22 +17,6 @@ def sa(x: str, y: str, mode: Alignment, s: tuple):
     string yields and optimal solution
     """
     P = empty(d, dtype=tuple) # Keep track of pointers
-
-    """
-    The starting arrays will be altered as necessary:
-    Needleman-Wunsch (NW): values for top and left rows given by -id and -jd respectively
-    String Fitting (FIT): Top row (i, 0) values 0'd as no penalty given for fitting a prefix of longer string to all gaps in shorter string; left row given by -jd
-    Smith-Waterman (SW): Top and left rows 0s
-
-    NOTE: Due to this construction of the algorithm, when performing String Fitting, the long string should be passed as parameter x
-    """
-
-    if(mode is Alignment.NW):
-        for i in range(d[0]):
-            F[i][0] = i * gs
-    if(mode is Alignment.FIT or mode is Alignment.NW):
-        for j in range(d[1]):
-            F[0][j] = j * gs
 
     # 'match' is used to determine whether to add/subtract the score for a match/mismatch depending on the two letters presently compared
     match: bool
@@ -59,7 +39,7 @@ def sa(x: str, y: str, mode: Alignment, s: tuple):
 
             The results array is mapped to reflect this; any scores below 0 are mapped to 0
             """
-            if mode is Alignment.SW: r = list(map(lambda a: 0 if a < 0 else a, r))
+            r = list(map(lambda a: 0 if a < 0 else a, r))
 
             m = max(r)
 
@@ -72,9 +52,7 @@ def sa(x: str, y: str, mode: Alignment, s: tuple):
             F[i][j] = m
             P[i][j] = pointers
     
-    print(F)
-    print(P)
-    
+
 
 if __name__ == "__main__":
     # computes matrices used to calculate optimal solutions
