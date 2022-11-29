@@ -51,15 +51,3 @@ def sa(x: str, y: str, s: tuple):
 
             F[i][j] = m
             P[i][j] = pointers
-    
-
-
-if __name__ == "__main__":
-    # computes matrices used to calculate optimal solutions
-    # note that traceback and optimal string construction was done manually
-    print('\nGAATTC and GATTA global alignment: ')
-    sa('GAATTC', 'GATTA', Alignment.NW, (2, -1, -1))
-    print('\nfitting GACG to CTGAGAT: ')
-    sa('GACG', 'CTGAGAT', Alignment.FIT, (2, -1, -1))
-    print('\nGATACTTG and AATATGTA local alignment: ')
-    sa('GATACTTG', 'AATATGTA', Alignment.SW, (2, -1, -1))
