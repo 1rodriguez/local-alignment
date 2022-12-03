@@ -21,7 +21,7 @@ def sa(x: str, y: str, s: tuple):
     # 'match' is used to determine whether to add/subtract the score for a match/mismatch depending on the two letters presently compared
     match: bool
 
-    # used to find the global max of the matrix the, where we will work backwards to do the traceback
+    # used to find the global max of the matrix the, where we will work backwards to determine the xy, for the optimal path
     globalMax = 0
     globalMaxXY: tuple = (1,1)
 
@@ -56,7 +56,7 @@ def sa(x: str, y: str, s: tuple):
             F[i][j] = m
             P[i][j] = pointers
 
-            # traceback logic
+            # finds the highest value in the matrix and saves the xy
             if globalMax < m:
                 globalMax = m
                 globalMaxXY = (i, j)
@@ -72,7 +72,7 @@ def traceback(colString: str, rowString: str, matrix, ptrMatrix, globalMaxXY: tu
     s2 = ""
     x = globalMaxXY[0]
     y = globalMaxXY[1]
-    
+
     # first fill the array recordOfCurMaxXY with the optimal route x,y points
     while currMax != 0:
         recordOfCurMaxXY.insert(0, (x, y))
