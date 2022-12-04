@@ -98,7 +98,7 @@ def sa(x: str, y: str, s: tuple):
             if globalMax < m:
                 globalMax = m
                 globalMaxXY = (i, j)
-    return F
+    return traceback(x, y, F, P, globalMaxXY)
 
 
 ## col string = the one on the top
@@ -122,32 +122,34 @@ def traceback(colString: str, rowString: str, matrix, ptrMatrix, globalMaxXY: tu
             y = y - 1
             currMax = matrix[x][y]
         # this block came from the up position
-        elif currPtr[0] == 1:
-            x = x - 1
+        elif currPtr[0] > 0:
+            x = currPtr[0]
+            y = y - 1
             currMax = matrix[x][y]
         # this block came from the left position
         else:
-            y = y - 1
+            y = -currPtr[0]
+            x = x - 1
             currMax = matrix[x][y]
 
     # once the optimal xy route is found, create the strings using the loop below
     lastx = -1
     lasty = -1
     for i in range(0, len(recordOfCurMaxXY)):
-        tuple = recordOfCurMaxXY[i]
-        if tuple[0] == lastx:
-            s1 += "_"
-            s2 += colString[tuple[1] - 1]
-        elif tuple[1] == lasty:
-            s1 += rowString[tuple[0] - 1]
-            s2 += "_"
-        else:
-            s1 += rowString[tuple[0] - 1]
-            s2 += colString[tuple[1] - 1]
-        lastx = tuple[0]
-        lasty = tuple[1]
+        tup = recordOfCurMaxXY[i]
+        if tup[0] - lastx > 1 and i != 0:  # always shifting in affine
+            s1 += rowString[lastx] + "_" * (tup[0] - lastx - 1)
+            s2 += colString[(tup[1] - 1) : (tup[0] - lastx)]
+        elif tup[1] - lasty > 1 and i != 0:
+            s1 += rowString[(tup[0] - 1) : (tup[0] - 1) + (tup[1] - lasty)]
+            s2 += colString[lasty] + "_" * (tup[1] - lasty - 1)
+        else:  # no changes needed for affine
+            s1 += rowString[tup[0] - 1]
+            s2 += colString[tup[1] - 1]
+        lastx = tup[0]
+        lasty = tup[1]
 
     return (s1, s2)
 
 
-print(sa("AATTTTATGTA", "GATACTTG", (2, -1, 10, 1)))
+print(sa("AAAGAATTCA", "AACATCACA", (10, -1, 3, 1)))
