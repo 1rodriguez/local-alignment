@@ -41,11 +41,11 @@ def sa(x: str, y: str, s: tuple):
                 return -gap_open - (g - 1) * gap_extend
 
             # We don't mind true maximum values being < 0 as these values will be mapped to 0 by the lambda on score array 'r' later
-            row_max: int  # first loop
-            rm_loc: int
+            row_max: int = None  # first loop
+            rm_loc: int = None
 
-            col_max: int  # second loop
-            cm_loc: int
+            col_max: int = None  # second loop
+            cm_loc: int = None
 
             for k in range(0, i):
                 val = F[k][j] + gap_pen(i - k)
@@ -98,7 +98,7 @@ def sa(x: str, y: str, s: tuple):
             if globalMax < m:
                 globalMax = m
                 globalMaxXY = (i, j)
-    return traceback(x, y, F, P, globalMaxXY)
+    return F
 
 
 ## col string = the one on the top
@@ -150,4 +150,4 @@ def traceback(colString: str, rowString: str, matrix, ptrMatrix, globalMaxXY: tu
     return (s1, s2)
 
 
-print(sa("AATTTTATGTA", "GATACTTG", (2, -1, -1)))
+print(sa("AATTTTATGTA", "GATACTTG", (2, -1, 10, 1)))
