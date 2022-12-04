@@ -21,6 +21,10 @@ def sa(x: str, y: str, s: tuple):
     # 'match' is used to determine whether to add/subtract the score for a match/mismatch depending on the two letters presently compared
     match: bool
 
+    # used to find the global max of the matrix the, where we will work backwards to determine the xy, for the optimal path
+    globalMax = 0
+    globalMaxXY: tuple = (1,1)
+
 
     # Algorithm starts at [1, 1]  as top/left rows were previously intiialized    
     for i in range(1, d[0]):
@@ -51,3 +55,60 @@ def sa(x: str, y: str, s: tuple):
 
             F[i][j] = m
             P[i][j] = pointers
+
+            # finds the highest value in the matrix and saves the xy
+            if globalMax < m:
+                globalMax = m
+                globalMaxXY = (i, j)
+    return (traceback(x, y, F, P, globalMaxXY))
+
+## col string = the one on the top
+## row string = the one on the left axis
+## calculates the backtrack
+def traceback(colString: str, rowString: str, matrix, ptrMatrix, globalMaxXY: tuple):
+    currMax = matrix[globalMaxXY[0]][globalMaxXY[1]]
+    recordOfCurMaxXY = []
+    s1 = ""
+    s2 = ""
+    x = globalMaxXY[0]
+    y = globalMaxXY[1]
+
+    # first fill the array recordOfCurMaxXY with the optimal route x,y points
+    while currMax != 0:
+        recordOfCurMaxXY.insert(0, (x, y))
+        currPtr = ptrMatrix[x][y]
+        #this block came from the up-left position
+        if currPtr[0] == 0:
+            x = x - 1
+            y = y - 1
+            currMax = matrix[x][y]
+        #this block came from the up position
+        elif currPtr[0] == 1:
+            x = x - 1
+            currMax = matrix[x][y]
+        #this block came from the left position
+        else:
+            y = y - 1
+            currMax = matrix[x][y]
+
+    #once the optimal xy route is found, create the strings using the loop below
+    lastx = -1
+    lasty = -1
+    for i in range(0, len(recordOfCurMaxXY)):
+        tuple = recordOfCurMaxXY[i]
+        if tuple[0] == lastx:
+            s1 += "_"
+            s2 += colString[tuple[1] - 1]
+        elif tuple[1] == lasty:
+            s1 += rowString[tuple[0] - 1]
+            s2 += "_"
+        else:
+            s1 += rowString[tuple[0] - 1]
+            s2 += colString[tuple[1] - 1]
+        lastx = tuple[0]
+        lasty = tuple[1]
+
+    return(s1, s2)
+
+
+print(sa("AATTTTATGTA", "GATACTTG", (2, -1, -1)))
