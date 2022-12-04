@@ -1,5 +1,4 @@
 from numpy import zeros, empty
-from enum import Enum
 
 
 
