@@ -7,13 +7,15 @@ def sa(x: str, y: str, s: tuple):
     
     F = zeros(d)
 
-    ms, mms, gs = s # match, mismatch, and gap scores from score tuple
+    ms, mms, gap_open, gap_extend = s # match, mismatch, gap open (d), and gap extend (e) from score tuple
     # NOTE: mms and gs should be passed as negative values
 
     """
     pointers will follow direction convention left = 2, up-left = 0, up = 1
     tuples of pointers kept for those occasions in which more than one
     string yields and optimal solution
+
+    NOTE: No longer true for affine
     """
     P = empty(d, dtype=tuple) # Keep track of pointers
 
@@ -31,10 +33,34 @@ def sa(x: str, y: str, s: tuple):
             match = x[j - 1] == y[i - 1]
 
             score = ms if match else mms
+            
+            # a formula: gamma(g) = -d -(g-1)e, affine gap penalty
+            def gap_pen(g):
+                return -gap_open - (g - 1) * gap_extend
+
+            # We don't mind true maximum values being < 0 as these values will be mapped to 0 by the lambda on score array 'r' later
+            row_max: int # first loop
+            rm_loc: int
+
+            col_max: int # second loop
+            cm_loc: int 
+            
+            for k in range(0, i):
+                val = F[k][j] + gap_pen(i - k)
+                if row_max is None or val > row_max: 
+                    row_max = val
+                    rm_loc = k
+
+            for k in range(0, j):
+                val = F[i][k] + gap_pen(j - k)
+                if col_max is None or val > col_max: 
+                    col_max = val
+                    cm_loc = k
+
             r = [
-                F[i - 1][j - 1] + score, 
-                F[i - 1][j] + gs, 
-                F[i][j - 1] + gs
+                F[i - 1][j - 1] + score,
+                row_max,
+                col_max
                 ]
 
             """
@@ -49,8 +75,24 @@ def sa(x: str, y: str, s: tuple):
             pointers: tuple = ()
 
             for k, e in enumerate(r):
+                """ 
+                If we use row_max, put (rm_loc, j) into the tuple,
+                otherwise, if we use col_max, put (i, cm_loc) into the tuple
+
+                Diagonal pointer can remain the same (up, left = 0)
+                Left and top pointers will now be positive and negative-encoded
+                Negative value = left (row)
+                Positive value = top (col)
+                |val| = the index along the row or column that we're pointing to
+                """
                 if e == m:
-                    pointers += (k,)
+                    if (k == 0):
+                        pointers += (k,)
+                    elif (k == 1): # up, column
+                        pointers += (cm_loc,)
+                        pass   
+                    else: # k == 2, left, row
+                        pointers += (-rm_loc,)
 
             F[i][j] = m
             P[i][j] = pointers
