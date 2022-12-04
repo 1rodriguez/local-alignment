@@ -88,7 +88,6 @@ def sa(x: str, y: str, s: tuple):
                         pointers += (k,)
                     elif k == 1:  # up, column
                         pointers += (cm_loc,)
-                        pass
                     else:  # k == 2, left, row
                         pointers += (-rm_loc,)
 
