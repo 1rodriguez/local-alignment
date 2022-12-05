@@ -26,15 +26,15 @@ def sa(x: str, y: str, s: tuple):
     globalMax = 0
     globalMaxXY: tuple = (1, 1)
 
+    # a formula: gamma(g) = -d -(g-1)e, affine gap penalty
+    def gap_pen(g):
+        return -gap_open - (g - 1) * gap_extend
+
     # Algorithm starts at [1, 1]  as top/left rows were previously intiialized
     for i in range(1, d[0]):
         for j in range(1, d[1]):
 
             score = scoring_matrix[x[j - 1] + y[i - 1]]
-
-            # a formula: gamma(g) = -d -(g-1)e, affine gap penalty
-            def gap_pen(g):
-                return -gap_open - (g - 1) * gap_extend
 
             # We don't mind true maximum values being < 0 as these values will be mapped to 0 by the lambda on score array 'r' later
             row_max: int = None  # first loop
