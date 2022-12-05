@@ -137,12 +137,16 @@ def traceback(colString: str, rowString: str, matrix, ptrMatrix, globalMaxXY: tu
     lasty = -1
     for i in range(0, len(recordOfCurMaxXY)):
         tup = recordOfCurMaxXY[i]
-        if tup[0] - lastx > 1 and i != 0:  # always shifting in affine
-            s1 += rowString[lastx] + "_" * (tup[0] - lastx - 1)
-            s2 += colString[(tup[1] - 1) : (tup[0] - lastx)]
-        elif tup[1] - lasty > 1 and i != 0:
-            s1 += rowString[(tup[0] - 1) : (tup[0] - 1) + (tup[1] - lasty)]
-            s2 += colString[lasty] + "_" * (tup[1] - lasty - 1)
+
+        arrow_x_shift = tup[0] - lastx
+        arrow_y_shift = tup[1] - lasty
+
+        if arrow_x_shift > 1 and i != 0:  # always shifting in affine
+            s1 += rowString[lastx] + "_" * (arrow_x_shift - 1)
+            s2 += colString[(tup[1] - 1) : (arrow_x_shift)]
+        elif arrow_y_shift > 1 and i != 0:
+            s1 += rowString[(tup[0] - 1) : (tup[0] - 1) + (arrow_y_shift)]
+            s2 += colString[lasty] + "_" * (arrow_y_shift - 1)
         else:  # no changes needed for affine
             s1 += rowString[tup[0] - 1]
             s2 += colString[tup[1] - 1]
