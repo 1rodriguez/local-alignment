@@ -1,4 +1,5 @@
 from numpy import zeros, empty
+import blosum as bl
 
 
 def sa(x: str, y: str, s: tuple):
@@ -6,12 +7,9 @@ def sa(x: str, y: str, s: tuple):
 
     F = zeros(d)
     (
-        ms,
-        mms,
         gap_open,
         gap_extend,
-    ) = s  # match, mismatch, gap open (d), and gap extend (e) from score tuple
-    # NOTE: mms and gs should be passed as negative values
+    ) = s  # gap open (d), and gap extend (e) from score tuple
 
     """
     pointers will follow direction convention left = 2, up-left = 0, up = 1
@@ -22,8 +20,7 @@ def sa(x: str, y: str, s: tuple):
     """
     P = empty(d, dtype=tuple)  # Keep track of pointers
 
-    # 'match' is used to determine whether to add/subtract the score for a match/mismatch depending on the two letters presently compared
-    match: bool
+    scoring_matrix = bl.BLOSUM(62)
 
     # used to find the global max of the matrix the, where we will work backwards to determine the xy, for the optimal path
     globalMax = 0
@@ -32,9 +29,8 @@ def sa(x: str, y: str, s: tuple):
     # Algorithm starts at [1, 1]  as top/left rows were previously intiialized
     for i in range(1, d[0]):
         for j in range(1, d[1]):
-            match = x[j - 1] == y[i - 1]
 
-            score = ms if match else mms
+            score = scoring_matrix[x[j - 1] + y[i - 1]]
 
             # a formula: gamma(g) = -d -(g-1)e, affine gap penalty
             def gap_pen(g):
@@ -156,4 +152,10 @@ def traceback(colString: str, rowString: str, matrix, ptrMatrix, globalMaxXY: tu
     return (s1, s2)
 
 
-print(sa("AAAGAATTCA", "AACATCACA", (10, -1, 3, 1)))
+print(
+    sa(
+        "VELTAEEKAAVLALWDKVKEDEVGGEALGRLLVVYPWTQRFFDSFGDLSTPAAVMGNAKVKAHGKKVLHSFGDGVHHLDNLKGTFAALSELHCDKLHVDPENFRLLGNVLVVVLAKHFGKQFTPELQAAYQKVVAGVANALAHKYH*",
+        "MLTAEEKASVISLFAKVNVEEVGGEALGRLLVVYPWTQRFFEHFGDLSSADAILGNPKVKGHGKKVLNSFSEGLKQLDDLKGAFASLSELHCDKLHVDPENFRLLGNVLVVVLARRFGGEFTPELQANFQKVVTGVANALAHRYH*",
+        (10, 1),
+    )
+)
