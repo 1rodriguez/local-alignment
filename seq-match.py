@@ -143,7 +143,7 @@ def traceback(colString: str, rowString: str, matrix, ptrMatrix, globalMaxXY: tu
 
         if arrow_x_shift > 1 and i != 0:  # always shifting in affine
             s1 += rowString[lastx] + "_" * (arrow_x_shift - 1)
-            s2 += colString[(tup[1] - 1) : (arrow_x_shift)]
+            s2 += colString[(tup[1] - 1) : (tup[1] - 1) + (arrow_x_shift)]
         elif arrow_y_shift > 1 and i != 0:
             s1 += rowString[(tup[0] - 1) : (tup[0] - 1) + (arrow_y_shift)]
             s2 += colString[lasty] + "_" * (arrow_y_shift - 1)
