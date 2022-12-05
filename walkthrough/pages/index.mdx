@@ -1,0 +1,94 @@
+Slideshow
+
+This is how to use the `<CH.Sildeshow>` component. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quia! Quidem, quisquam.
+
+<CH.Slideshow>
+
+```python
+for i in range(0, len(recordOfCurMaxXY)):
+    tup = recordOfCurMaxXY[i]
+    if tup[0] - lastx > 1 and i != 0:  # always shifting in affine
+        s1 += rowString[lastx] + "_" * (tup[0] - lastx - 1)
+        s2 += colString[(tup[1] - 1) : (tup[0] - lastx)]
+    elif tup[1] - lasty > 1 and i != 0:
+        s1 += rowString[(tup[0] - 1) : (tup[0] - 1) + (tup[1] - lasty)]
+        s2 += colString[lasty] + "_" * (tup[1] - lasty - 1)
+    else:  # no changes needed for affine
+        s1 += rowString[tup[0] - 1]
+        s2 += colString[tup[1] - 1]
+    lastx = tup[0]
+    lasty = tup[1]
+```
+
+---
+
+```python
+for i in range(0, len(recordOfCurMaxXY)):
+        tuple = recordOfCurMaxXY[i]
+        if tuple[0] == lastx:
+        # focus(1)
+            s1 += "_"
+            s2 += colString[tuple[1] - 1]
+        elif tuple[1] == lasty:
+            s1 += rowString[tuple[0] - 1]
+            s2 += "_"
+        else:
+            s1 += rowString[tuple[0] - 1]
+            s2 += colString[tuple[1] - 1]
+        lastx = tuple[0]
+        lasty = tuple[1]
+```
+
+---
+
+```rust
+// focus(1:3)
+pub fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+#[allow(dead_code)]
+fn bad_add(a: i32, b: i32) -> i32 {
+    a - b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+// focus(1:4)
+    #[test]
+    fn test_add() {
+        assert_eq!(add(1, 2), 3);
+    }
+}
+```
+
+---
+
+```rust
+pub fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+// focus(1:4)
+#[allow(dead_code)]
+fn bad_add(a: i32, b: i32) -> i32 {
+    a - b
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_add() {
+        assert_eq!(add(1, 2), 3);
+    }
+// focus(1:4)
+    #[test]
+    fn test_bad_add() {
+        assert_eq!(bad_add(1, 2), 3);
+    }
+}
+```
+
+</CH.Slideshow>
