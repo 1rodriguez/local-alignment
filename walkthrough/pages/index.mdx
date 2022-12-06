@@ -3,40 +3,122 @@ Slideshow
 This is how to use the `<CH.Sildeshow>` component. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quia! Quidem, quisquam.
 
 <CH.Slideshow>
+{/* 
+Because we are looping over the array O(n^2) complexity,
+Because we are iterating through the entries in the preceding row and column
+for each entry, O(n^3) time complexity  */}
+```python
+# focus(1:2)
+for i in range(1, d[0]):
+    for j in range(1, d[1]):
+
+        score = scoring_matrix[x[j - 1] + y[i - 1]]
+
+        # We don't mind true maximum values being < 0 as these values will be mapped to 0 by the lambda on score array 'r' later
+        row_max: int = None  # first loop
+        rm_loc: int = None
+
+        col_max: int = None  # second loop
+        cm_loc: int = None
+
+        # focus(1)
+        for k in range(0, i):
+            val = F[k][j] + gap_pen(i - k)
+            if row_max is None or val > row_max:
+                row_max = val
+                rm_loc = k
+        # focus(1)
+        for k in range(0, j):
+            val = F[i][k] + gap_pen(j - k)
+            if col_max is None or val > col_max:
+                col_max = val
+                cm_loc = k
+
+````
+
+---
 
 ```python
-for i in range(0, len(recordOfCurMaxXY)):
-    tup = recordOfCurMaxXY[i]
-    if tup[0] - lastx > 1 and i != 0:  # always shifting in affine
-        s1 += rowString[lastx] + "_" * (tup[0] - lastx - 1)
-        s2 += colString[(tup[1] - 1) : (tup[0] - lastx)]
-    elif tup[1] - lasty > 1 and i != 0:
-        s1 += rowString[(tup[0] - 1) : (tup[0] - 1) + (tup[1] - lasty)]
-        s2 += colString[lasty] + "_" * (tup[1] - lasty - 1)
-    else:  # no changes needed for affine
-        s1 += rowString[tup[0] - 1]
-        s2 += colString[tup[1] - 1]
-    lastx = tup[0]
-    lasty = tup[1]
+        for k in range(0, i):
+            val = F[k][j] + gap_pen(i - k)
+            if row_max is None or val > row_max:
+                row_max = val
+                rm_loc = k
+````
+
+---
+
+```python
+        for k in range(0, i):
+            # focus(1)
+            val = F[k][j] + gap_pen(i - k)
+            if row_max is None or val > row_max:
+                row_max = val
+                rm_loc = k
 ```
 
 ---
 
 ```python
-for i in range(0, len(recordOfCurMaxXY)):
-        tuple = recordOfCurMaxXY[i]
-        if tuple[0] == lastx:
-        # focus(1)
-            s1 += "_"
-            s2 += colString[tuple[1] - 1]
-        elif tuple[1] == lasty:
-            s1 += rowString[tuple[0] - 1]
-            s2 += "_"
+        def gap_pen(g):
+            return -gap_open - (g - 1) * gap_extend
+```
+
+---
+
+```python
+    def traceback(colString: str, rowString: str, matrix, ptrMatrix, globalMaxXY: tuple):
+        currMax = matrix[globalMaxXY[0]][globalMaxXY[1]]
+        recordOfCurMaxXY = []
+        s1 = ""
+        s2 = ""
+        x = globalMaxXY[0]
+        y = globalMaxXY[1]
+```
+
+---
+
+```python
+    while currMax != 0:
+        recordOfCurMaxXY.insert(0, (x, y))
+        currPtr = ptrMatrix[x][y]
+        # this block came from the up-left position
+        if currPtr[0] == 0:
+            x = x - 1
+            y = y - 1
+            currMax = matrix[x][y]
+        # this block came from the up position
+        elif currPtr[0] > 0:
+            x = currPtr[0]
+            y = y - 1
+            currMax = matrix[x][y]
+        # this block came from the left position
         else:
-            s1 += rowString[tuple[0] - 1]
-            s2 += colString[tuple[1] - 1]
-        lastx = tuple[0]
-        lasty = tuple[1]
+            y = -currPtr[0]
+            x = x - 1
+            currMax = matrix[x][y]
+```
+
+---
+
+```python
+    for i in range(0, len(recordOfCurMaxXY)):
+        tup = recordOfCurMaxXY[i]
+
+        arrow_x_shift = tup[0] - lastx
+        arrow_y_shift = tup[1] - lasty
+
+        if arrow_x_shift > 1 and i != 0:  # always shifting in affine
+            s1 += rowString[lastx] + "_" * (arrow_x_shift - 1)
+            s2 += colString[(tup[1] - 1) : (tup[1] - 1) + (arrow_x_shift)]
+        elif arrow_y_shift > 1 and i != 0:
+            s1 += rowString[(tup[0] - 1) : (tup[0] - 1) + (arrow_y_shift)]
+            s2 += colString[lasty] + "_" * (arrow_y_shift - 1)
+        else:  # no changes needed for affine
+            s1 += rowString[tup[0] - 1]
+            s2 += colString[tup[1] - 1]
+        lastx = tup[0]
+        lasty = tup[1]
 ```
 
 ---
